@@ -5,4 +5,6 @@ plugins {
 
 dependencies {
     api(libs.serialization.json)
+    implementation(libs.java.jwt)
+    implementation(libs.commons.text)
 }
