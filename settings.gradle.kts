@@ -15,7 +15,7 @@ dependencyResolutionManagement {
 }
 
 include(
-    "libs:common",
+    "common",
     "services:quiz-api",
     "services:ingest",
     "services:scorer",

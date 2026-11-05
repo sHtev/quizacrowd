@@ -1,0 +1,117 @@
+{
+  "name": "The Gilroy Quiz Number 1",
+  "slug": "gilroy-quiz-one",
+  "rounds": [
+    {
+      "title": "General Knowledge",
+      "type": "multiple",
+      "roundID": "gilroy-quiz-one-1",
+      "category": {
+        "name": "General Knowledge",
+        "type": "text",
+        "triviaDbCode": "9"
+      },
+      "questions": [
+        {
+          "description": "Which of these companies does NOT manufacture automobiles?",
+          "freeText": false,
+          "correctAnswers": [
+            "Ducati"
+          ],
+          "incorrectAnswers": [
+            "Nissan",
+            "GMC",
+            "Fiat"
+          ]
+        },
+        {
+          "description": "Which of the following buildings is example of a structure primarily built in the Art Deco architectural style?",
+          "freeText": false,
+          "correctAnswers": [
+            "Niagara Mohawk Building"
+          ],
+          "incorrectAnswers": [
+            "Taipei 101",
+            "One Detroit Center",
+            "Westendstrasse 1"
+          ]
+        },
+        {
+          "description": "Who wrote the &quot;A Song of Ice And Fire&quot; fantasy novel series?",
+          "freeText": false,
+          "correctAnswers": [
+            "George R. R. Martin"
+          ],
+          "incorrectAnswers": [
+            "George Lucas",
+            "George Orwell",
+            "George Eliot"
+          ]
+        },
+        {
+          "description": "Can you name the artist and song title from the reversed song?",
+          "freeText": true,
+          "correctAnswers": [
+            "Champagne Supernova",
+            "Oasis"
+          ],
+          "incorrectAnswers": [],
+          "mediaLink": "https://pub-quiz-assets.s3-eu-west-1.amazonaws.com/songs/clips/ff92cf83350f02b3fb62cf066b8019e2_clip.mp3",
+          "revealMediaLink": "https://pub-quiz-assets.s3-eu-west-1.amazonaws.com/songs/reveals/ff92cf83350f02b3fb62cf066b8019e2_reveal.mp3"
+        }
+      ]
+    },
+    {
+      "title": "Video Games",
+      "type": "boolean",
+      "roundID": "gilroy-quiz-one-8",
+      "category": {
+        "name": "Video Games",
+        "type": "text",
+        "triviaDbCode": "15"
+      },
+      "questions": [
+        {
+          "description": "Pac-Man was invented by the designer Toru Iwatani while he was eating pizza.",
+          "freeText": false,
+          "correctAnswers": [
+            "True"
+          ],
+          "incorrectAnswers": [
+            "False"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Name That Film",
+      "type": "film",
+      "roundID": "gilroy-quiz-one-7",
+      "category": {
+        "name": "Name That Film",
+        "type": "text",
+        "triviaDbCode": "101"
+      },
+      "questions": [
+        {
+          "description": "Can you name the film from the screenshot above?",
+          "freeText": true,
+          "correctAnswers": [
+            "Rashomon"
+          ],
+          "incorrectAnswers": [],
+          "mediaLink": "https://pub-quiz-assets.s3-eu-west-1.amazonaws.com/screenshots/tt0042876/qLGAOQd1RSnfpJab0MN5Lubkgu5.jpg"
+        },
+        {
+          "description": "Can you name the film from the screenshot above?",
+          "freeText": true,
+          "correctAnswers": [
+            "Full Metal Jacket"
+          ],
+          "incorrectAnswers": [],
+          "mediaLink": "https://pub-quiz-assets.s3-eu-west-1.amazonaws.com/screenshots/tt0093058/v6JAlrwRLCnIujs9NFIViursbhg.jpg"
+        }
+      ]
+    }
+  ]
+}

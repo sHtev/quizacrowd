@@ -58,6 +58,7 @@ class JoinTokenVerifier(publicKeyPem: String, clock: Clock = Clock.systemUTC()) 
     }
 }
 
+// Unencrypted PKCS#8 / X.509 PEM only. Swap for java.security.PEMDecoder once it leaves preview (JEP 470).
 private fun pemBody(pem: String): ByteArray =
     Base64.getMimeDecoder().decode(pem.lines().filterNot { it.startsWith("-----") }.joinToString(""))
 

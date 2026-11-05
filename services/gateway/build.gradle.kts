@@ -9,7 +9,7 @@ application {
 }
 
 dependencies {
-    implementation(project(":libs:common"))
+    implementation(project(":common"))
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.logback)
