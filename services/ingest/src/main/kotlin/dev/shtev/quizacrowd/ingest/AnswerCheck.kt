@@ -13,6 +13,6 @@ enum class Verdict { ACCEPTED, CLOSED, INVALID_CHOICE }
  */
 fun checkAnswer(open: OpenQuestion?, questionId: String, choice: Int, nowEpochMs: Long): Verdict {
     if (open == null || questionId != open.questionId || nowEpochMs > open.deadlineEpochMs) return Verdict.CLOSED
-    if (choice in 0 until open.optionCount) return Verdict.ACCEPTED
-    return Verdict.INVALID_CHOICE
+    if (choice !in 0..<open.optionCount) return Verdict.INVALID_CHOICE
+    return Verdict.ACCEPTED
 }
