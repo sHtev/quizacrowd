@@ -38,6 +38,9 @@ fun Application.module(config: Config) {
     Flyway.configure().dataSource(dataSource).load().migrate()
     val db = Database.connect(dataSource)
     val tokens = JoinTokenIssuer(config.joinTokenPrivateKeyPem)
+    val valkey = Valkey(config.valkeyUrl)
+    monitor.subscribe(ApplicationStopped) { valkey.close() }
+    val rounds = RoundControl(db, valkey, config.questionSeconds)
 
     install(ContentNegotiation) { json(quizJson) }
     install(StatusPages) {
@@ -48,6 +51,6 @@ fun Application.module(config: Config) {
     routing {
         get("/healthz") { call.respondText("ok") }
         tenantRoutes(db, config)
-        quizRoutes(db, config, tokens)
+        quizRoutes(db, config, tokens, valkey, rounds)
     }
 }

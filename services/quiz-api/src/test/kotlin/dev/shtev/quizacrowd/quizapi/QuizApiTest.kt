@@ -1,115 +1,23 @@
 package dev.shtev.quizacrowd.quizapi
 
 import dev.shtev.quizacrowd.common.JoinTokenVerifier
-import io.ktor.client.HttpClient
-import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.server.testing.ApplicationTestBuilder
-import io.ktor.server.testing.testApplication
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import org.junit.jupiter.api.BeforeEach
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.postgresql.PostgreSQLContainer
-import java.security.KeyPairGenerator
-import java.security.spec.ECGenParameterSpec
-import java.sql.DriverManager
-import java.util.Base64
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-@Testcontainers
-class QuizApiTest {
-    companion object {
-        @Container
-        @JvmStatic
-        val postgres = PostgreSQLContainer("postgres:17-alpine")
-
-        private val keys = KeyPairGenerator.getInstance("EC").apply { initialize(ECGenParameterSpec("secp256r1")) }.generateKeyPair()
-        private fun pem(type: String, der: ByteArray) =
-            "-----BEGIN $type-----\n" + Base64.getMimeEncoder().encodeToString(der) + "\n-----END $type-----\n"
-        val privatePem = pem("PRIVATE KEY", keys.private.encoded)
-        val publicPem = pem("PUBLIC KEY", keys.public.encoded)
-        const val ADMIN = "admin-secret"
-    }
-
-    private val sample = javaClass.getResource("/quizzer-sample.json")!!.readText()
-
-    private fun config() = Config(
-        baseDomain = "localhost",
-        databaseUrl = postgres.jdbcUrl,
-        databaseUser = postgres.username,
-        databasePassword = postgres.password,
-        adminToken = ADMIN,
-        joinTokenPrivateKeyPem = privatePem,
-    )
-
-    @BeforeEach
-    fun cleanDatabase() {
-        DriverManager.getConnection(postgres.jdbcUrl, postgres.username, postgres.password).use { c ->
-            c.createStatement().use { s ->
-                val hasSchema = s.executeQuery("select to_regclass('public.tenants') is not null").let { it.next(); it.getBoolean(1) }
-                if (hasSchema) s.execute("truncate tenants, quizzes, questions, players, answers cascade")
-            }
-        }
-    }
-
-    private fun api(block: suspend ApplicationTestBuilder.() -> Unit) = testApplication {
-        application { module(config()) }
-        block()
-    }
-
-    private suspend fun HttpClient.createTenant(slug: String, token: String? = ADMIN): HttpResponse =
-        post("/admin/tenants") {
-            header(HttpHeaders.Host, "admin.localhost")
-            token?.let { bearerAuth(it) }
-            contentType(ContentType.Application.Json)
-            setBody("""{"slug":"$slug","name":"The ${slug.replaceFirstChar { it.uppercase() }}"}""")
-        }
-
-    private suspend fun HttpClient.hostKey(slug: String): String =
-        Json.parseToJsonElement(createTenant(slug).bodyAsText()).jsonObject["hostKey"]!!.jsonPrimitive.content
-
-    private suspend fun HttpClient.importQuiz(tenant: String, key: String, body: String = sample): HttpResponse =
-        post("/api/quizzes?mode=PUB") {
-            header(HttpHeaders.Host, "$tenant.localhost")
-            bearerAuth(key)
-            contentType(ContentType.Application.Json)
-            setBody(body)
-        }
-
-    private suspend fun HttpClient.quizId(tenant: String, key: String): String =
-        Json.parseToJsonElement(importQuiz(tenant, key).bodyAsText()).jsonObject["quizId"]!!.jsonPrimitive.content
-
-    private suspend fun HttpClient.join(quizId: String, name: String, tenant: String = "redlion"): HttpResponse =
-        post("/api/quizzes/$quizId/join") {
-            header(HttpHeaders.Host, "$tenant.localhost")
-            contentType(ContentType.Application.Json)
-            setBody(Json.encodeToString(mapOf("name" to name)))
-        }
-
-    private fun sql(query: String): List<List<String?>> =
-        DriverManager.getConnection(postgres.jdbcUrl, postgres.username, postgres.password).use { c ->
-            c.createStatement().use { s ->
-                val rs = s.executeQuery(query)
-                buildList { while (rs.next()) add((1..rs.metaData.columnCount).map { rs.getString(it) }) }
-            }
-        }
-
+class QuizApiTest : ApiTest() {
     @Test
     fun adminCreatesTenant() = api {
         val created = client.createTenant("redlion")

@@ -21,6 +21,8 @@ subprojects {
         }
         tasks.withType<Test>().configureEach {
             useJUnitPlatform()
+            // Netty loads a native library; JDK 25 warns unless native access is allowed.
+            jvmArgs("--enable-native-access=ALL-UNNAMED")
         }
     }
 }

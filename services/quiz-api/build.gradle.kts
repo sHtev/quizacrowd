@@ -6,6 +6,7 @@ plugins {
 
 application {
     mainClass.set("dev.shtev.quizacrowd.quizapi.ApplicationKt")
+    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED")
 }
 
 dependencies {
@@ -24,6 +25,7 @@ dependencies {
     implementation(libs.hikari)
     implementation(libs.postgres)
     implementation(libs.zxing.core)
+    implementation(libs.lettuce)
     implementation(libs.logback)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.ktor.client.content.negotiation)

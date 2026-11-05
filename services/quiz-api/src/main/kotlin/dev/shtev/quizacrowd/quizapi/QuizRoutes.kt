@@ -37,7 +37,7 @@ data class JoinRequest(val name: String)
 @Serializable
 data class Joined(val playerId: String, val token: String)
 
-fun Route.quizRoutes(db: Database, config: Config, tokens: JoinTokenIssuer) {
+fun Route.quizRoutes(db: Database, config: Config, tokens: JoinTokenIssuer, valkey: Valkey, rounds: RoundControl) {
     post("/api/quizzes") {
         val tenant = call.authorisedHost(db, config) ?: return@post call.respond(HttpStatusCode.Unauthorized)
         val mode = call.request.queryParameters["mode"]?.let { m -> QuizMode.entries.find { it.name == m } }
@@ -90,8 +90,19 @@ fun Route.quizRoutes(db: Database, config: Config, tokens: JoinTokenIssuer) {
                     it[Players.name] = name
                 }
             }
+            valkey.recordName(quiz.id.toString(), playerId.toString(), name)
             val token = tokens.issue(JoinClaims(playerId.toString(), quiz.id.toString(), tenant, name))
             call.respond(HttpStatusCode.Created, Joined(playerId.toString(), token))
+        }
+
+        // POST /next, /close and /end
+        for (action in HostAction.entries) {
+            post("/${action.name.lowercase()}") {
+                call.authorisedHost(db, config) ?: return@post call.respond(HttpStatusCode.Unauthorized)
+                val (_, quiz) = call.quizForTenant(db, config) ?: return@post call.respond(HttpStatusCode.NotFound)
+                val applied = rounds.apply(quiz.id, action)
+                call.respond(if (applied) HttpStatusCode.OK else HttpStatusCode.Conflict)
+            }
         }
     }
 }
