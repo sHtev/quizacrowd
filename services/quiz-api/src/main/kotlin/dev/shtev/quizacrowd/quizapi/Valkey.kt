@@ -5,6 +5,7 @@ import dev.shtev.quizacrowd.common.QuizEvent
 import dev.shtev.quizacrowd.common.Standing
 import dev.shtev.quizacrowd.common.ValkeyKeys
 import dev.shtev.quizacrowd.common.quizJson
+import dev.shtev.quizacrowd.common.toCurrentQuestionHash
 import dev.shtev.quizacrowd.common.topStandings
 import io.lettuce.core.RedisClient
 import kotlinx.coroutines.future.await
@@ -22,17 +23,7 @@ class Valkey(url: String) : AutoCloseable {
 
     /** Everything ingest needs to check an answer and the gateway needs to resend the question. */
     suspend fun setCurrentQuestion(quizId: String, question: QuestionStarted) {
-        val fields = mapOf(
-            "questionId" to question.questionId,
-            "index" to question.index.toString(),
-            "total" to question.total.toString(),
-            "startedAt" to question.startedAtEpochMs.toString(),
-            "deadline" to question.deadlineEpochMs.toString(),
-            "optionCount" to question.options.size.toString(),
-            "text" to question.text,
-            "options" to quizJson.encodeToString(question.options),
-        )
-        commands.hset(ValkeyKeys.currentQuestion(quizId), fields).await()
+        commands.hset(ValkeyKeys.currentQuestion(quizId), question.toCurrentQuestionHash()).await()
     }
 
     suspend fun clearCurrentQuestion(quizId: String) {

@@ -17,11 +17,9 @@ sealed interface ThrottleDecision {
  * [lastPublishedAtMs] is null before the first publish; [scheduledAtMs] is null when nothing is scheduled.
  */
 fun decide(nowMs: Long, lastPublishedAtMs: Long?, scheduledAtMs: Long?, intervalMs: Long): ThrottleDecision {
-    if (lastPublishedAtMs == null) return ThrottleDecision.PublishNow
-    if (scheduledAtMs == null) {
+    return lastPublishedAtMs?.let {
         val nextScheduledMs = lastPublishedAtMs + intervalMs
-        if (nowMs < nextScheduledMs) return ThrottleDecision.PublishAt(nextScheduledMs)
-        return ThrottleDecision.PublishNow
-    }
-    return ThrottleDecision.AlreadyScheduled
+        scheduledAtMs?.let { ThrottleDecision.AlreadyScheduled }
+            ?: if (nowMs < nextScheduledMs) ThrottleDecision.PublishAt(nextScheduledMs) else ThrottleDecision.PublishNow
+    } ?: ThrottleDecision.PublishNow
 }
