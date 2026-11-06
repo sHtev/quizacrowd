@@ -1,0 +1,27 @@
+# Local k3d cluster: tenants are {tenant}.localhost, images come from `./gradlew jibDockerBuild`.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - { name: ghcr.io/shtev/quizacrowd-quiz-api, newTag: local }
+  - { name: ghcr.io/shtev/quizacrowd-ingest, newTag: local }
+  - { name: ghcr.io/shtev/quizacrowd-scorer, newTag: local }
+  - { name: ghcr.io/shtev/quizacrowd-gateway, newTag: local }
+patches:
+  - target: { kind: ConfigMap, name: quizacrowd-config }
+    patch: |
+      - op: replace
+        path: /data/BASE_DOMAIN
+        value: localhost
+  - target: { kind: IngressRoute, name: quizacrowd }
+    patch: |
+      - op: replace
+        path: /spec/routes/0/match
+        value: HostRegexp(`^[a-z0-9-]+\.localhost$`) && Path(`/ws`)
+      - op: replace
+        path: /spec/routes/1/match
+        value: HostRegexp(`^[a-z0-9-]+\.localhost$`) && Path(`/answers`)
+      - op: replace
+        path: /spec/routes/2/match
+        value: HostRegexp(`^[a-z0-9-]+\.localhost$`) && PathPrefix(`/api/`)

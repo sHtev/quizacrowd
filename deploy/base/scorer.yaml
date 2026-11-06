@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scorer
+spec:
+  selector:
+    app: scorer
+  ports:
+    - port: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scorer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scorer
+  template:
+    metadata:
+      labels:
+        app: scorer
+    spec:
+      containers:
+        - name: scorer
+          image: ghcr.io/shtev/quizacrowd-scorer
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: quizacrowd-config
+          env:
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: quizacrowd-secrets, key: DATABASE_PASSWORD }
+          lifecycle:
+            preStop: # keep serving while Traefik drops this pod from its routes, then shut down
+              sleep: { seconds: 5 }
+          ports:
+            - containerPort: 8080
+          startupProbe: # the JVM takes a few seconds; allow up to a minute
+            httpGet: { path: /healthz, port: 8080 }
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests: { memory: 128Mi }
+            limits: { memory: 384Mi }

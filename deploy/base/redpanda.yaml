@@ -1,0 +1,62 @@
+# One broker. Advertised as the Service name, which works because there's only one pod behind it.
+apiVersion: v1
+kind: Service
+metadata:
+  name: redpanda
+spec:
+  selector:
+    app: redpanda
+  ports:
+    - name: kafka
+      port: 9092
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redpanda
+spec:
+  serviceName: redpanda
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redpanda
+  template:
+    metadata:
+      labels:
+        app: redpanda
+    spec:
+      securityContext:
+        fsGroup: 101 # the image's redpanda user, so it can write the volume
+      containers:
+        - name: redpanda
+          image: redpandadata/redpanda:v26.2.6
+          args:
+            - redpanda
+            - start
+            - --smp=1
+            - --memory=768M
+            - --overprovisioned
+            - --kafka-addr=0.0.0.0:9092
+            - --advertise-kafka-addr=redpanda:9092
+            - --check=false
+          ports:
+            - containerPort: 9092
+          readinessProbe:
+            exec:
+              command: [rpk, cluster, health, --exit-when-healthy]
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            requests: { memory: 1Gi }
+            limits: { memory: 1Gi }
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/redpanda/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 2Gi

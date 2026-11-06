@@ -1,0 +1,39 @@
+# No persistence in Stage 1: scores are rebuilt from Postgres by the scorer, and the open
+# question is rewritten by the next host action.
+apiVersion: v1
+kind: Service
+metadata:
+  name: valkey
+spec:
+  selector:
+    app: valkey
+  ports:
+    - port: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valkey
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valkey
+  template:
+    metadata:
+      labels:
+        app: valkey
+    spec:
+      containers:
+        - name: valkey
+          image: valkey/valkey:8-alpine
+          args: [--save, "", --appendonly, "no"]
+          ports:
+            - containerPort: 6379
+          readinessProbe:
+            exec:
+              command: [valkey-cli, ping]
+            periodSeconds: 5
+          resources:
+            requests: { memory: 64Mi }
+            limits: { memory: 128Mi }

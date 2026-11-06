@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingest
+spec:
+  selector:
+    app: ingest
+  ports:
+    - port: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ingest
+  template:
+    metadata:
+      labels:
+        app: ingest
+    spec:
+      containers:
+        - name: ingest
+          image: ghcr.io/shtev/quizacrowd-ingest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: quizacrowd-config
+          env:
+            - name: JOIN_TOKEN_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef: { name: quizacrowd-secrets, key: JOIN_TOKEN_PUBLIC_KEY }
+          lifecycle:
+            preStop: # keep serving while Traefik drops this pod from its routes, then shut down
+              sleep: { seconds: 5 }
+          ports:
+            - containerPort: 8080
+          startupProbe: # the JVM takes a few seconds; allow up to a minute
+            httpGet: { path: /healthz, port: 8080 }
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests: { memory: 128Mi }
+            limits: { memory: 384Mi }
