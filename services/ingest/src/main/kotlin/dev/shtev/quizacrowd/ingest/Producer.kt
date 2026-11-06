@@ -1,5 +1,6 @@
 package dev.shtev.quizacrowd.ingest
 
+import dev.shtev.quizacrowd.common.ANSWERS_TOPIC
 import dev.shtev.quizacrowd.common.AnswerSubmitted
 import dev.shtev.quizacrowd.common.quizJson
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -15,7 +16,6 @@ import java.util.concurrent.ExecutionException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-const val ANSWERS_TOPIC = "answers"
 private const val ANSWERS_PARTITIONS = 6
 
 /** Creates the answers topic if it isn't there yet. One broker in Stage 1, so one replica. */

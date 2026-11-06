@@ -5,8 +5,8 @@ import dev.shtev.quizacrowd.common.QuizEvent
 import dev.shtev.quizacrowd.common.Standing
 import dev.shtev.quizacrowd.common.ValkeyKeys
 import dev.shtev.quizacrowd.common.quizJson
+import dev.shtev.quizacrowd.common.topStandings
 import io.lettuce.core.RedisClient
-import io.lettuce.core.ZRange
 import kotlinx.coroutines.future.await
 
 /** quiz-api's use of Valkey: the open question, player names, standings and events. */
@@ -43,14 +43,7 @@ class Valkey(url: String) : AutoCloseable {
         commands.hset(ValkeyKeys.names(quizId), playerId, name).await()
     }
 
-    /** Highest scores first, with display names. */
-    suspend fun topStandings(quizId: String, count: Int = 10): List<Standing> {
-        val scores = commands.zrangeWithScores(ValkeyKeys.leaderboard(quizId), ZRange.byIndex(0, count - 1L).rev()).await()
-        if (scores.isEmpty()) return emptyList()
-        val names = commands.hmget(ValkeyKeys.names(quizId), *scores.map { it.value }.toTypedArray()).await()
-            .associate { it.key to it.getValueOrElse("?") }
-        return scores.map { Standing(names.getValue(it.value), it.score.toLong()) }
-    }
+    suspend fun topStandings(quizId: String): List<Standing> = commands.topStandings(quizId)
 
     override fun close() {
         connection.close()

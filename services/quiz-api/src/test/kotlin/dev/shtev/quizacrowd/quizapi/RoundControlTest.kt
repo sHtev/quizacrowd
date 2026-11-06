@@ -163,7 +163,7 @@ class RoundControlTest : ApiTest() {
         Subscription("events:$quizId").use { events ->
             assertEquals(HttpStatusCode.OK, client.host(quizId, "end", key).status)
             val ended = assertIs<QuizEnded>(events.next())
-            assertEquals((12 downTo 3).map { Standing("Player $it", it * 100L) }, ended.top)
+            assertEquals((12 downTo 3).map { Standing("Player $it", it * 100L, rank = 13 - it) }, ended.top)
         }
         assertEquals(0L, redis.exists("quiz:$quizId:current"), "ending mid-question clears it")
         assertEquals("ENDED", state(quizId)[0])

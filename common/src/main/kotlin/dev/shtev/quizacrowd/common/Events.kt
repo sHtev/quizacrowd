@@ -44,8 +44,12 @@ data class QuizEnded(val top: List<Standing>) : QuizEvent()
 @SerialName("you")
 data class YourStanding(val rank: Int?, val score: Long) : QuizEvent()
 
+/** [rank] is 1-based; players on the same score share a rank (see [ranked]). */
 @Serializable
-data class Standing(val name: String, val score: Long)
+data class Standing(val name: String, val score: Long, val rank: Int)
+
+/** Redpanda topic carrying [AnswerSubmitted], keyed by quiz id. */
+const val ANSWERS_TOPIC = "answers"
 
 /** An answer as it travels through Redpanda; not sent to clients. */
 @Serializable

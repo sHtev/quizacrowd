@@ -19,7 +19,7 @@ class EventsTest {
 
     @Test
     fun eachEventHasItsTypeName() {
-        val top = listOf(Standing("Ada", 900))
+        val top = listOf(Standing("Ada", 900, rank = 1))
         assertEquals("closed", typeOf(QuestionClosed("q1", 1)))
         assertEquals("leaderboard", typeOf(LeaderboardUpdated(top, answered = 3)))
         assertEquals("ended", typeOf(QuizEnded(top)))

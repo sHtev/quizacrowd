@@ -1,5 +1,6 @@
 package dev.shtev.quizacrowd.ingest
 
+import dev.shtev.quizacrowd.common.ANSWERS_TOPIC
 import dev.shtev.quizacrowd.common.AnswerSubmitted
 import dev.shtev.quizacrowd.common.JoinClaims
 import dev.shtev.quizacrowd.common.JoinTokenIssuer
