@@ -49,6 +49,13 @@ subprojects {
                 jvmFlags = listOf("-XX:MaxRAMPercentage=75", "--enable-native-access=ALL-UNNAMED")
                 ports = listOf("8080")
                 user = "65532" // non-root
+                // Links the GHCR package to the repository, so it takes the repository's (public) visibility.
+                // Title and description replace the ones inherited from the base image.
+                labels = mapOf(
+                    "org.opencontainers.image.source" to "https://github.com/sHtev/quizacrowd",
+                    "org.opencontainers.image.title" to "quizacrowd-${project.name}",
+                    "org.opencontainers.image.description" to "QuizACrowd ${project.name} service",
+                )
             }
         }
         // Jib reads the project while its tasks run, which the configuration cache forbids; those runs skip the cache.
