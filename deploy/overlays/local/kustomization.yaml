@@ -24,4 +24,4 @@ patches:
         value: HostRegexp(`^[a-z0-9-]+\.localhost$`) && Path(`/answers`)
       - op: replace
         path: /spec/routes/2/match
-        value: HostRegexp(`^[a-z0-9-]+\.localhost$`) && PathPrefix(`/api/`)
+        value: HostRegexp(`^[a-z0-9-]+\.localhost$`) && (PathPrefix(`/api/`) || PathPrefix(`/assets/`) || Path(`/play`) || Path(`/host`) || Path(`/screen`))

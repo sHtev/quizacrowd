@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuizACrowd</title>
+  <link rel="stylesheet" href="/assets/app.css">
+  <script type="module" src="/assets/play.js"></script>
+</head>
+<body class="play">
+<main>
+  <p id="error" class="error" role="alert" hidden></p>
+
+  <form id="join" hidden>
+    <label for="name">Your name</label>
+    <input id="name" maxlength="24" autocomplete="nickname" required>
+    <button type="submit">Join</button>
+  </form>
+
+  <section id="game" hidden>
+    <p class="standing">Score <strong data-testid="score" id="score">0</strong> · Rank <strong data-testid="rank" id="rank">–</strong></p>
+    <p id="waiting">Waiting for the next question…</p>
+    <div id="round" hidden>
+      <p class="meta"><span id="progress"></span> <span id="countdown" class="countdown"></span></p>
+      <h1 id="question" data-testid="question"></h1>
+      <div id="options" class="options" data-testid="options"></div>
+      <p id="result" class="result" data-testid="result" aria-live="polite"></p>
+    </div>
+    <p id="final" hidden>That's the end of the quiz. Thanks for playing!</p>
+  </section>
+</main>
+</body>
+</html>

@@ -17,7 +17,7 @@ spec:
       services:
         - name: ingest
           port: 8080
-    - match: HostRegexp(`^[a-z0-9-]+\.quizacrowd\.example$`) && PathPrefix(`/api/`)
+    - match: HostRegexp(`^[a-z0-9-]+\.quizacrowd\.example$`) && (PathPrefix(`/api/`) || PathPrefix(`/assets/`) || Path(`/play`) || Path(`/host`) || Path(`/screen`))
       kind: Rule
       services:
         - name: quiz-api

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuizACrowd host</title>
+  <link rel="stylesheet" href="/assets/app.css">
+  <script type="module" src="/assets/host.js"></script>
+</head>
+<body class="host">
+<main>
+  <h1>Host</h1>
+  <p id="error" class="error" role="alert" hidden></p>
+
+  <form id="import">
+    <label for="key">Host key</label>
+    <input id="key" type="password" autocomplete="off" required>
+    <label for="file">Quizzer file</label>
+    <input id="file" type="file" accept=".json,application/json" required>
+    <button type="submit">Import</button>
+  </form>
+
+  <section id="quiz" hidden>
+    <p>Quiz <code id="quiz-id" data-testid="quiz-id"></code></p>
+    <p><a id="screen-link" target="_blank">Open the big screen</a></p>
+    <p id="status" aria-live="polite">Players are joining.</p>
+    <div class="controls">
+      <button id="next" type="button">Next</button>
+      <button id="close" type="button">Close</button>
+      <button id="end" type="button">End</button>
+    </div>
+    <p>Answered: <strong id="answered" data-testid="answered">0</strong></p>
+    <button id="another" type="button" class="secondary">Import another quiz</button>
+  </section>
+</main>
+</body>
+</html>

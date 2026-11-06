@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # End-to-end check against the local cluster: one tenant, one quiz, two players, one question.
-# Public traffic goes through Traefik on localhost:8080; the admin call goes through a port-forward,
-# because /admin isn't routed publicly.
+# Public traffic goes through Traefik on localhost:8080; host-key.sh creates the tenant.
 set -euo pipefail
 
 CONTEXT=${KUBE_CONTEXT:-k3d-quizacrowd}
@@ -12,35 +11,7 @@ FIXTURE="$(dirname "$0")/../services/quiz-api/src/test/resources/quizzer-sample.
 k() { kubectl --context "$CONTEXT" -n "$NS" "$@"; }
 fail() { echo "FAIL: $*" >&2; exit 1; }
 
-secret() { k get secret quizacrowd-secrets -o "jsonpath={.data.$1}" | base64 -d; }
-ADMIN_TOKEN=$(secret ADMIN_TOKEN)
-
-# Admin: create the tenant through a port-forward to quiz-api. Right after a restart the forward can
-# attach to a pod that is shutting down, so start it again until /healthz answers.
-PF=
-trap 'if [ -n "$PF" ]; then kill "$PF" 2>/dev/null || true; fi' EXIT
-forward() {
-  for _ in $(seq 5); do
-    k port-forward svc/quiz-api 18080:8080 >/dev/null 2>&1 &
-    PF=$!
-    for _ in $(seq 25); do curl -s -o /dev/null http://localhost:18080/healthz && return 0; sleep 0.2; done
-    kill "$PF" 2>/dev/null || true
-  done
-  return 1
-}
-forward || fail "no port-forward to quiz-api"
-SLUG="redlion"
-TENANT=$(mktemp)
-status=$(curl -s -o "$TENANT" -w '%{http_code}' -X POST http://localhost:18080/admin/tenants \
-  -H "Authorization: Bearer $ADMIN_TOKEN" -H 'Content-Type: application/json' \
-  -d "{\"slug\":\"$SLUG\",\"name\":\"The Red Lion\"}")
-case $status in
-  201) HOST_KEY=$(jq -r .hostKey "$TENANT")
-       k create secret generic smoke-host-key --from-literal=key="$HOST_KEY" --dry-run=client -o yaml | k apply -f - >/dev/null ;;
-  409) HOST_KEY=$(k get secret smoke-host-key -o 'jsonpath={.data.key}' | base64 -d) ;; # tenant left by an earlier run
-  *)   fail "create tenant: HTTP $status" ;;
-esac
-rm -f "$TENANT"
+HOST_KEY=$("$(dirname "$0")/host-key.sh" redlion "The Red Lion")
 
 api() { curl -sf -H "Host: $HOST" "$@"; }
 host() { api -H "Authorization: Bearer $HOST_KEY" "$@"; }

@@ -52,5 +52,6 @@ fun Application.module(config: Config) {
         get("/healthz") { call.respondText("ok") }
         tenantRoutes(db, config)
         quizRoutes(db, config, tokens, valkey, rounds)
+        pageRoutes()
     }
 }

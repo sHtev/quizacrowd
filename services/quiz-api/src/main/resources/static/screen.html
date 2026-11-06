@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuizACrowd</title>
+  <link rel="stylesheet" href="/assets/app.css">
+  <script type="module" src="/assets/screen.js"></script>
+</head>
+<body class="screen">
+<main>
+  <aside class="join">
+    <img id="qr" alt="Scan to join">
+    <p>Scan to join</p>
+  </aside>
+
+  <section class="stage">
+    <p id="lobby" class="lobby">Waiting for the quiz to start…</p>
+    <div id="round" hidden>
+      <p class="meta"><span id="progress"></span> <span id="countdown" class="countdown"></span></p>
+      <h1 id="question" data-testid="question"></h1>
+      <ol id="options" class="options" type="A"></ol>
+      <p class="answered"><strong id="answered">0</strong> answered</p>
+    </div>
+    <h1 id="final" data-testid="final" hidden>Final scores</h1>
+  </section>
+
+  <section class="board">
+    <h2>Leaderboard</h2>
+    <ol id="leaderboard" class="standings" data-testid="leaderboard"></ol>
+  </section>
+</main>
+</body>
+</html>
