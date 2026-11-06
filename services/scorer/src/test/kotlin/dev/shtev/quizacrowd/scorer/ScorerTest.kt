@@ -205,6 +205,17 @@ class ScorerTest {
     }
 
     @Test
+    fun latestLeaderboardKeptForReconnects() = scorer {
+        val ada = player("Ada")
+        Events(ValkeyKeys.events(quizId)).use { events ->
+            send(answer(ada, q0, choice = 1, receivedAfterMs = 5_000))
+            val published = events.until { it is LeaderboardUpdated && it.answered == 1 }.last()
+            // Stored before it's published, so it's already there when a screen sees the event.
+            assertEquals(published, quizJson.decodeFromString<QuizEvent>(redis.get(ValkeyKeys.latestLeaderboard(quizId))))
+        }
+    }
+
+    @Test
     fun playersOnTheSameScoreShareARank() = scorer {
         // Answers 3 ms apart round to the same points; neither player should be ranked above the other.
         val zoe = player("Zoe")

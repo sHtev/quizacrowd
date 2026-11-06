@@ -8,6 +8,9 @@ object ValkeyKeys {
     /** Sorted set of playerId to score. */
     fun leaderboard(quizId: String) = "lb:$quizId"
 
+    /** The last [LeaderboardUpdated] published, as JSON, for screens that connect later. */
+    fun latestLeaderboard(quizId: String) = "quiz:$quizId:leaderboard"
+
     /** Hash of playerId to display name. */
     fun names(quizId: String) = "names:$quizId"
 

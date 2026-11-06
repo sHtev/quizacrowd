@@ -150,6 +150,26 @@ class GatewayTest {
     }
 
     @Test
+    fun screenGetsLatestLeaderboardOnConnect() = api {
+        redis.hset(ValkeyKeys.currentQuestion(quizId), question.toCurrentQuestionHash())
+        val board = LeaderboardUpdated(listOf(Standing("Ada", 450, 1)), answered = 1)
+        redis.set(ValkeyKeys.latestLeaderboard(quizId), quizJson.encodeToString<QuizEvent>(board))
+
+        val screen = wsClient().connect("screen=$quizId")
+
+        assertEquals(question, screen.next())
+        assertEquals(board, screen.next())
+    }
+
+    @Test
+    fun playersDoNotGetTheLeaderboardOnConnect() = api {
+        redis.set(ValkeyKeys.latestLeaderboard(quizId), quizJson.encodeToString<QuizEvent>(LeaderboardUpdated(emptyList(), 0)))
+        val ada = wsClient().connect("token=${tokenFor("Ada")}")
+        assertIs<YourStanding>(ada.next())
+        ada.nothingMore()
+    }
+
+    @Test
     fun playerWithNoScoreYetHasNoRank() = api {
         val ada = wsClient().connect("token=${tokenFor("Ada")}")
         assertEquals(YourStanding(rank = null, score = 0), ada.next())

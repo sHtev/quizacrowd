@@ -74,7 +74,9 @@ class LeaderboardPublisher(
     private suspend fun publish(quizId: String) {
         val questionId = synchronized(states) { states.getValue(quizId).questionId } ?: return
         val answered = withContext(Dispatchers.IO) { answered(questionId) }
-        val event: QuizEvent = LeaderboardUpdated(valkey.topStandings(quizId), answered)
-        valkey.publish(ValkeyKeys.events(quizId), quizJson.encodeToString(event)).await()
+        val event = quizJson.encodeToString<QuizEvent>(LeaderboardUpdated(valkey.topStandings(quizId), answered))
+        // Kept for screens that connect later (the gateway sends it on connect); stored first so it's never behind the event.
+        valkey.set(ValkeyKeys.latestLeaderboard(quizId), event).await()
+        valkey.publish(ValkeyKeys.events(quizId), event).await()
     }
 }

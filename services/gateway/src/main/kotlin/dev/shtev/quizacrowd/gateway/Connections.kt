@@ -70,9 +70,15 @@ fun Route.connectionRoutes(
     }
 }
 
-/** What a new or reconnecting viewer needs straight away: the open question, and a player's own standing. */
+/**
+ * What a new or reconnecting viewer needs straight away: the open question, then a player's own standing
+ * or, for a screen, the last leaderboard published (already JSON, so it's passed on as it is).
+ */
 private suspend fun currentState(valkey: RedisAsyncCommands<String, String>, viewer: Viewer): List<String> = buildList {
     val question = questionFromHash(valkey.hgetall(ValkeyKeys.currentQuestion(viewer.quizId)).await())
     if (question != null) add(quizJson.encodeToString<QuizEvent>(question))
-    if (viewer is Viewer.Player) add(quizJson.encodeToString<QuizEvent>(valkey.standingOf(viewer.quizId, viewer.playerId)))
+    when (viewer) {
+        is Viewer.Player -> add(quizJson.encodeToString<QuizEvent>(valkey.standingOf(viewer.quizId, viewer.playerId)))
+        is Viewer.Screen -> valkey.get(ValkeyKeys.latestLeaderboard(viewer.quizId)).await()?.let { add(it) }
+    }
 }

@@ -77,6 +77,10 @@ test('a round from import to leaderboard', async ({ browser }) => {
   await expect(screen.getByTestId('leaderboard').locator('b')).toHaveCount(0)
   await expect(ada.getByTestId('rank')).toHaveText('1')
 
+  // A big screen that reloads gets the leaderboard back straight away.
+  await screen.reload()
+  await expect(rows).toHaveCount(2)
+
   // reconnectGetsCurrentState, end to end: Ada reloads mid-question 2 and is still in the quiz.
   await host.getByRole('button', { name: 'Next' }).click()
   await expect(bob.getByTestId('question')).not.toHaveText(text)
