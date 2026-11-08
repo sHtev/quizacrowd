@@ -7,16 +7,16 @@ resources:
 images:
 - name: ghcr.io/shtev/quizacrowd-gateway
   newName: ghcr.io/shtev/quizacrowd-gateway
-  newTag: 744bbf3
+  newTag: 0c84967
 - name: ghcr.io/shtev/quizacrowd-ingest
   newName: ghcr.io/shtev/quizacrowd-ingest
-  newTag: 744bbf3
+  newTag: 0c84967
 - name: ghcr.io/shtev/quizacrowd-quiz-api
   newName: ghcr.io/shtev/quizacrowd-quiz-api
-  newTag: 744bbf3
+  newTag: 0c84967
 - name: ghcr.io/shtev/quizacrowd-scorer
   newName: ghcr.io/shtev/quizacrowd-scorer
-  newTag: 744bbf3
+  newTag: 0c84967
 patches:
 - patch: |
     - op: replace
