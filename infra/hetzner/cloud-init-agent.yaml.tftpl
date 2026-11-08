@@ -1,7 +1,22 @@
 #cloud-config
 # k3s agent. Runs once, on first boot.
+write_files:
+  # Hetzner can attach the private network a few seconds after boot, after networking is configured;
+  # this makes any en* interface (the public one is eth0) take its address by DHCP whenever it appears.
+  - path: /etc/netplan/60-private.yaml
+    permissions: "0600"
+    content: |
+      network:
+        version: 2
+        ethernets:
+          private:
+            match: { name: "en*" }
+            dhcp4: true
+
 runcmd:
-  - until ip -4 addr | grep -q "inet ${node_ip}/"; do sleep 2; done
+  - until ip -4 addr | grep -q "inet ${node_ip}/"; do netplan apply; sleep 5; done
+  # flannel would otherwise use the public interface, where the firewall drops its VXLAN traffic.
+  - ip -o -4 addr show | awk -v ip='${node_ip}' 'index($4, ip "/") == 1 {print $2}' > /run/private-iface
   # Wait for the server to come up before joining.
   - until curl -sk ${k3s_server}/ping; do sleep 5; done
   - >-
@@ -9,3 +24,4 @@ runcmd:
     INSTALL_K3S_VERSION='${k3s_version}' K3S_URL='${k3s_server}' K3S_TOKEN='${k3s_token}'
     sh -s - agent
     --node-ip ${node_ip}
+    --flannel-iface "$(cat /run/private-iface)"
