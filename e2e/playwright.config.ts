@@ -6,6 +6,7 @@ export default defineConfig({
   testDir: 'tests',
   timeout: 60_000,
   expect: { timeout: 10_000 },
-  use: { baseURL: 'http://redlion.localhost:8080', trace: 'retain-on-failure' },
+  // BASE_URL points it at another cluster, e.g. https://redlion.quizacrowd.online.
+  use: { baseURL: process.env.BASE_URL ?? 'http://redlion.localhost:8080', trace: 'retain-on-failure' },
   projects: [{ name: 'chromium', use: { browserName: 'chromium' } }],
 })

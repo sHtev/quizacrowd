@@ -1,0 +1,24 @@
+# Plain HTTP that reaches the origin (Cloudflare normally upgrades it first) is redirected to HTTPS.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: https-redirect
+spec:
+  entryPoints: [web]
+  routes:
+    - match: HostRegexp(`^([a-z0-9-]+\.)?quizacrowd\.online$`)
+      kind: Rule
+      middlewares:
+        - name: https-redirect
+      services:
+        - kind: TraefikService
+          name: noop@internal

@@ -13,3 +13,4 @@ infra/backend.hcl
 *.tfvars
 !*.tfvars.example
 .terraform.lock.hcl.bak
+*.tfplan
