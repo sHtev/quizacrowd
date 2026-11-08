@@ -1,0 +1,11 @@
+# Argo CD for a small cluster: one replica of everything, no SSO (Dex) and no notifications.
+# The UI is reached with kubectl port-forward, so it isn't exposed through Traefik.
+dex:
+  enabled: false
+notifications:
+  enabled: false
+applicationSet:
+  replicas: 0 # apps are plain Applications (app of apps)
+configs:
+  params:
+    server.insecure: true # TLS isn't needed behind a port-forward

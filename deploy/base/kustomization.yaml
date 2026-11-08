@@ -1,17 +1,6 @@
+# Everything, for clusters without ArgoCD (local k3d). On Hetzner, ArgoCD deploys platform/ and services/ as two apps.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: quizacrowd
-labels:
-  - pairs:
-      app.kubernetes.io/part-of: quizacrowd
 resources:
-  - namespace.yaml
-  - config.yaml
-  - postgres.yaml
-  - valkey.yaml
-  - redpanda.yaml
-  - quiz-api.yaml
-  - ingest.yaml
-  - scorer.yaml
-  - gateway.yaml
-  - ingressroute.yaml
+  - platform
+  - services

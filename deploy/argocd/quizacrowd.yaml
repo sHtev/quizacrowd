@@ -1,0 +1,19 @@
+# The four services; CI updates their image tags in the overlay.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: quizacrowd
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sHtev/quizacrowd.git
+    targetRevision: main
+    path: deploy/overlays/hetzner
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: quizacrowd
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }

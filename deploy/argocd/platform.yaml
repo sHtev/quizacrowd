@@ -1,0 +1,19 @@
+# Postgres, Valkey and Redpanda.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sHtev/quizacrowd.git
+    targetRevision: main
+    path: deploy/overlays/hetzner/platform
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: quizacrowd
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }

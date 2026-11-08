@@ -1,0 +1,38 @@
+#cloud-config
+# k3s server. Runs once, on first boot.
+write_files:
+  # k3s applies anything in this directory; this reconfigures its bundled Traefik.
+  - path: /var/lib/rancher/k3s/server/manifests/traefik-config.yaml
+    content: |
+      apiVersion: helm.cattle.io/v1
+      kind: HelmChartConfig
+      metadata:
+        name: traefik
+        namespace: kube-system
+      spec:
+        valuesContent: |-
+          # The Hetzner load balancer forwards 80/443 to these ports on every node.
+          service:
+            type: NodePort
+          ports:
+            web:
+              nodePort: 30080
+            websecure:
+              nodePort: 30443
+          # Player join tokens travel in the /ws query string, so access logs stay off.
+          logs:
+            access:
+              enabled: false
+
+runcmd:
+  # The private network address can arrive a little after boot; k3s binds to it.
+  - until ip -4 addr | grep -q "inet ${node_ip}/"; do sleep 2; done
+  - >-
+    curl -sfL https://get.k3s.io |
+    INSTALL_K3S_VERSION='${k3s_version}' K3S_TOKEN='${k3s_token}'
+    sh -s - server
+    --disable servicelb
+    --node-ip ${node_ip}
+    --advertise-address ${node_ip}
+    --tls-san ${public_ip}
+    --write-kubeconfig-mode 0600

@@ -1,0 +1,14 @@
+# The four QuizACrowd services and their routes (ArgoCD app "quizacrowd").
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: quizacrowd
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: quizacrowd
+resources:
+  - config.yaml
+  - quiz-api.yaml
+  - ingest.yaml
+  - scorer.yaml
+  - gateway.yaml
+  - ingressroute.yaml

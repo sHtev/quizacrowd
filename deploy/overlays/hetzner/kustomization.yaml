@@ -1,0 +1,28 @@
+# Hetzner: the four services (ArgoCD app "quizacrowd"). CI sets the image tags below on every main build.
+# Until the real domain exists (Task 13), tenants are {tenant}.2.31.145.13.sslip.io over plain HTTP.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base/services
+images:
+  - { name: ghcr.io/shtev/quizacrowd-quiz-api, newTag: 3b88280 }
+  - { name: ghcr.io/shtev/quizacrowd-ingest, newTag: 3b88280 }
+  - { name: ghcr.io/shtev/quizacrowd-scorer, newTag: 3b88280 }
+  - { name: ghcr.io/shtev/quizacrowd-gateway, newTag: 3b88280 }
+patches:
+  - target: { kind: ConfigMap, name: quizacrowd-config }
+    patch: |
+      - op: replace
+        path: /data/BASE_DOMAIN
+        value: 2.31.145.13.sslip.io
+  - target: { kind: IngressRoute, name: quizacrowd }
+    patch: |
+      - op: replace
+        path: /spec/routes/0/match
+        value: HostRegexp(`^[a-z0-9-]+\.2\.31\.145\.13\.sslip\.io$`) && Path(`/ws`)
+      - op: replace
+        path: /spec/routes/1/match
+        value: HostRegexp(`^[a-z0-9-]+\.2\.31\.145\.13\.sslip\.io$`) && Path(`/answers`)
+      - op: replace
+        path: /spec/routes/2/match
+        value: HostRegexp(`^[a-z0-9-]+\.2\.31\.145\.13\.sslip\.io$`) && (PathPrefix(`/api/`) || PathPrefix(`/assets/`) || Path(`/play`) || Path(`/host`) || Path(`/screen`))

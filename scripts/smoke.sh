@@ -5,8 +5,9 @@ set -euo pipefail
 
 CONTEXT=${KUBE_CONTEXT:-k3d-quizacrowd}
 NS=quizacrowd
-BASE=http://localhost:8080
-HOST="redlion.localhost"
+# Defaults are the local k3d cluster; for Hetzner: BASE=http://<lb ip> DOMAIN=<lb ip>.sslip.io.
+BASE=${BASE:-http://localhost:8080}
+HOST="redlion.${DOMAIN:-localhost}"
 FIXTURE="$(dirname "$0")/../services/quiz-api/src/test/resources/quizzer-sample.json"
 k() { kubectl --context "$CONTEXT" -n "$NS" "$@"; }
 fail() { echo "FAIL: $*" >&2; exit 1; }

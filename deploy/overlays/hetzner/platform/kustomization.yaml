@@ -1,0 +1,5 @@
+# Hetzner: Postgres, Valkey and Redpanda (ArgoCD app "platform"), as in base.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../base/platform

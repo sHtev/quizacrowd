@@ -1,0 +1,11 @@
+#cloud-config
+# k3s agent. Runs once, on first boot.
+runcmd:
+  - until ip -4 addr | grep -q "inet ${node_ip}/"; do sleep 2; done
+  # Wait for the server to come up before joining.
+  - until curl -sk ${k3s_server}/ping; do sleep 5; done
+  - >-
+    curl -sfL https://get.k3s.io |
+    INSTALL_K3S_VERSION='${k3s_version}' K3S_URL='${k3s_server}' K3S_TOKEN='${k3s_token}'
+    sh -s - agent
+    --node-ip ${node_ip}
