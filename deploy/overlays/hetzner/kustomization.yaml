@@ -3,26 +3,38 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../../base/services
+- ../../base/services
 images:
-  - { name: ghcr.io/shtev/quizacrowd-quiz-api, newTag: 3b88280 }
-  - { name: ghcr.io/shtev/quizacrowd-ingest, newTag: 3b88280 }
-  - { name: ghcr.io/shtev/quizacrowd-scorer, newTag: 3b88280 }
-  - { name: ghcr.io/shtev/quizacrowd-gateway, newTag: 3b88280 }
+- name: ghcr.io/shtev/quizacrowd-gateway
+  newName: ghcr.io/shtev/quizacrowd-gateway
+  newTag: 744bbf3
+- name: ghcr.io/shtev/quizacrowd-ingest
+  newName: ghcr.io/shtev/quizacrowd-ingest
+  newTag: 744bbf3
+- name: ghcr.io/shtev/quizacrowd-quiz-api
+  newName: ghcr.io/shtev/quizacrowd-quiz-api
+  newTag: 744bbf3
+- name: ghcr.io/shtev/quizacrowd-scorer
+  newName: ghcr.io/shtev/quizacrowd-scorer
+  newTag: 744bbf3
 patches:
-  - target: { kind: ConfigMap, name: quizacrowd-config }
-    patch: |
-      - op: replace
-        path: /data/BASE_DOMAIN
-        value: 2.31.145.13.sslip.io
-  - target: { kind: IngressRoute, name: quizacrowd }
-    patch: |
-      - op: replace
-        path: /spec/routes/0/match
-        value: HostRegexp(`^[a-z0-9-]+\.2\.31\.145\.13\.sslip\.io$`) && Path(`/ws`)
-      - op: replace
-        path: /spec/routes/1/match
-        value: HostRegexp(`^[a-z0-9-]+\.2\.31\.145\.13\.sslip\.io$`) && Path(`/answers`)
-      - op: replace
-        path: /spec/routes/2/match
-        value: HostRegexp(`^[a-z0-9-]+\.2\.31\.145\.13\.sslip\.io$`) && (PathPrefix(`/api/`) || PathPrefix(`/assets/`) || Path(`/play`) || Path(`/host`) || Path(`/screen`))
+- patch: |
+    - op: replace
+      path: /data/BASE_DOMAIN
+      value: 2.31.145.13.sslip.io
+  target:
+    kind: ConfigMap
+    name: quizacrowd-config
+- patch: |
+    - op: replace
+      path: /spec/routes/0/match
+      value: HostRegexp(`^[a-z0-9-]+\.2\.31\.145\.13\.sslip\.io$`) && Path(`/ws`)
+    - op: replace
+      path: /spec/routes/1/match
+      value: HostRegexp(`^[a-z0-9-]+\.2\.31\.145\.13\.sslip\.io$`) && Path(`/answers`)
+    - op: replace
+      path: /spec/routes/2/match
+      value: HostRegexp(`^[a-z0-9-]+\.2\.31\.145\.13\.sslip\.io$`) && (PathPrefix(`/api/`) || PathPrefix(`/assets/`) || Path(`/play`) || Path(`/host`) || Path(`/screen`))
+  target:
+    kind: IngressRoute
+    name: quizacrowd
