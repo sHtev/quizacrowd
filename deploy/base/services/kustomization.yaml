@@ -6,9 +6,19 @@ labels:
   - pairs:
       app.kubernetes.io/part-of: quizacrowd
 resources:
-  - config.yaml
   - quiz-api.yaml
   - ingest.yaml
   - scorer.yaml
   - gateway.yaml
   - ingressroute.yaml
+# Non-secret settings shared by the services. Generated, so the name carries a hash of the contents:
+# a change (e.g. an overlay's BASE_DOMAIN) renames it and the Deployments roll out new pods.
+# Secrets live in quizacrowd-secrets, created by scripts/bootstrap-secrets.sh and never stored in git.
+configMapGenerator:
+  - name: quizacrowd-config
+    literals:
+      - BASE_DOMAIN=quizacrowd.example # set by each overlay
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/quizacrowd
+      - DATABASE_USER=quizacrowd
+      - VALKEY_URL=redis://valkey:6379
+      - KAFKA_BOOTSTRAP=redpanda:9092
