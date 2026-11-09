@@ -9,28 +9,25 @@ resources:
 images:
 - name: ghcr.io/shtev/quizacrowd-gateway
   newName: ghcr.io/shtev/quizacrowd-gateway
-  newTag: 0c84967
+  newTag: c1a9923
 - name: ghcr.io/shtev/quizacrowd-ingest
   newName: ghcr.io/shtev/quizacrowd-ingest
-  newTag: 0c84967
+  newTag: c1a9923
 - name: ghcr.io/shtev/quizacrowd-quiz-api
   newName: ghcr.io/shtev/quizacrowd-quiz-api
-  newTag: 0c84967
+  newTag: c1a9923
 - name: ghcr.io/shtev/quizacrowd-scorer
   newName: ghcr.io/shtev/quizacrowd-scorer
-  newTag: 0c84967
+  newTag: c1a9923
 patches:
-- target:
-    kind: ConfigMap
-    name: quizacrowd-config
-  patch: |
+- patch: |
     - op: replace
       path: /data/BASE_DOMAIN
       value: quizacrowd.online
-- target:
-    kind: IngressRoute
-    name: quizacrowd
-  patch: |
+  target:
+    kind: ConfigMap
+    name: quizacrowd-config
+- patch: |
     - op: replace
       path: /spec/entryPoints
       value: [websecure]
@@ -46,3 +43,6 @@ patches:
     - op: replace
       path: /spec/routes/2/match
       value: HostRegexp(`^[a-z0-9-]+\.quizacrowd\.online$`) && (PathPrefix(`/api/`) || PathPrefix(`/assets/`) || Path(`/play`) || Path(`/host`) || Path(`/screen`))
+  target:
+    kind: IngressRoute
+    name: quizacrowd
