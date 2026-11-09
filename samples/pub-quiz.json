@@ -1,0 +1,70 @@
+{
+  "name": "QuizACrowd Demo Quiz",
+  "rounds": [
+    {
+      "title": "General Knowledge",
+      "questions": [
+        {
+          "description": "What is the capital city of Australia?",
+          "correctAnswers": ["Canberra"],
+          "incorrectAnswers": ["Sydney", "Melbourne", "Perth"]
+        },
+        {
+          "description": "How many sides does a hexagon have?",
+          "correctAnswers": ["6"],
+          "incorrectAnswers": ["5", "7", "8"]
+        },
+        {
+          "description": "Which planet is known as the Red Planet?",
+          "correctAnswers": ["Mars"],
+          "incorrectAnswers": ["Venus", "Jupiter", "Mercury"]
+        },
+        {
+          "description": "Which element has the chemical symbol Fe?",
+          "correctAnswers": ["Iron"],
+          "incorrectAnswers": ["Lead", "Fluorine", "Tin"]
+        }
+      ]
+    },
+    {
+      "title": "Yorkshire",
+      "questions": [
+        {
+          "description": "Which river flows through the centre of York?",
+          "correctAnswers": ["Ouse"],
+          "incorrectAnswers": ["Aire", "Don", "Tees"]
+        },
+        {
+          "description": "The Romans called York by which name?",
+          "correctAnswers": ["Eboracum"],
+          "incorrectAnswers": ["Londinium", "Deva", "Camulodunum"]
+        },
+        {
+          "description": "York Minster is a Gothic cathedral.",
+          "correctAnswers": ["True"],
+          "incorrectAnswers": ["False"]
+        }
+      ]
+    },
+    {
+      "title": "Science and Tech",
+      "questions": [
+        {
+          "description": "What does the 'S' in HTTPS stand for?",
+          "correctAnswers": ["Secure"],
+          "incorrectAnswers": ["Simple", "Standard", "Server"]
+        },
+        {
+          "description": "Water boils at 100°C at sea level.",
+          "correctAnswers": ["True"],
+          "incorrectAnswers": ["False"]
+        },
+        {
+          "description": "Which language was designed by JetBrains and first released in 2011?",
+          "correctAnswers": ["Kotlin"],
+          "incorrectAnswers": ["Scala", "Go", "Swift"]
+        }
+      ]
+    }
+  ]
+}

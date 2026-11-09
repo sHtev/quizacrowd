@@ -13,7 +13,10 @@ scripts/smoke.sh         # one question end to end with curl
 (cd e2e && npm ci && npx playwright test)   # browser test of a round
 ```
 
-Then open `http://redlion.localhost:8080/host` with the key from `scripts/host-key.sh redlion "The Red Lion"`.
+Then create a tenant with `scripts/host-key.sh redlion "The Red Lion"`, which prints its host key (run it again to
+print the same key), open `http://redlion.localhost:8080/host`, and import [`samples/pub-quiz.json`](samples/pub-quiz.json).
+The fixture in `services/quiz-api/src/test/resources` is a real Quizzer export with music and free-text questions,
+kept to test that the importer skips them.
 Load tests are in [`load/`](load/README.md).
 
 ## CI

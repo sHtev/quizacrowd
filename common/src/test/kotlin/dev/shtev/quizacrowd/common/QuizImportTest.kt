@@ -3,6 +3,7 @@ package dev.shtev.quizacrowd.common
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import java.io.File
 
 class QuizImportTest {
     private val sample = javaClass.getResource("/quizzer-sample.json")!!.readText()
@@ -50,5 +51,13 @@ class QuizImportTest {
     @Test
     fun malformedJsonRejected() {
         assertFailsWith<IllegalArgumentException> { importQuizzer("{not json", keepOrder) }
+    }
+
+    @Test
+    fun demoQuizImportsEverything() {
+        // Gradle runs tests from the module directory.
+        val result = importQuizzer(File("../samples/pub-quiz.json").readText())
+        assertEquals(10, result.questions.size)
+        assertEquals(0, result.skipped)
     }
 }
